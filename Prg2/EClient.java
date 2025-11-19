@@ -1,17 +1,34 @@
-import java.io.*;
 import java.net.*;
+import java.io.*;
 
 public class EClient {
-    public static void main(String[] args) throws Exception {
-        Socket s = new Socket("localhost", 9000);
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        BufferedReader srv = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+    public static void main(String args[]) {
+        Socket c = null;
         String line;
-        while (!(line = in.readLine()).equalsIgnoreCase("end")) {
-            out.println(line);
-            System.out.println("Server: " + srv.readLine());
+        DataInputStream is, is1;
+        PrintStream os;
+
+        try {
+            InetAddress ia = InetAddress.getLocalHost();
+            c = new Socket(ia, 9000);
+            System.out.println("Connected to server!");
+        } catch (IOException e) {
+            System.out.println(e);
         }
-        s.close();
+
+        try {
+            os = new PrintStream(c.getOutputStream());
+            is = new DataInputStream(System.in);
+            is1 = new DataInputStream(c.getInputStream());
+
+            while (true) {
+                System.out.print("Client: ");
+                line = is.readLine();
+                os.println(line);
+                System.out.println("Server: " + is1.readLine());
+            }
+        } catch (IOException e) {
+            System.out.println("Socket Closed!");
+        }
     }
 }
